@@ -6,6 +6,7 @@ on:
 
 jobs:
   plan:
+    name: Terraform Plan
     runs-on: ubuntu-latest
 
     permissions:
@@ -25,25 +26,26 @@ jobs:
           role-to-assume: arn:aws:iam::523473407799:role/Gitrole
           aws-region: eu-west-1
 
-      - name: Clean Terraform cache
-        run: rm -rf .terraform
+      - name: Terraform Init
+        run: terraform init -reconfigure -upgrade
         working-directory: terraform
 
-      - name: Terraform Init
-         run: |
-           rm -rf .terraform
-           terraform init -upgrade -reconfigure
-         working-directory: terraform
-
-
-        # run: terraform init -reconfigure
-        # working-directory: terraform
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
         working-directory: terraform
 
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
   apply:
+    name: Terraform Apply
     needs: plan
     runs-on: ubuntu-latest
 
@@ -66,6 +68,20 @@ jobs:
           role-to-assume: arn:aws:iam::523473407799:role/Gitrole
           aws-region: eu-west-1
 
+      - name: Clean Terraform cache
+        run: rm -rf .terraform
+        working-directory: terraform
+
+      - name: Terraform Init
+        run: terraform init -reconfigure -upgrade
+        working-directory: terraform
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: terraform
+
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
         working-directory: terraform
