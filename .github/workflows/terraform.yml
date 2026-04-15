@@ -27,22 +27,23 @@ jobs:
           aws-region: eu-west-1
 
       - name: Terraform Init
-        run: terraform init -reconfigure -upgrade
         working-directory: terraform
+        run: terraform init -reconfigure -upgrade
 
       - name: Terraform Validate
-        run: terraform validate
         working-directory: terraform
+        run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
         working-directory: terraform
+        run: terraform plan -out=tfplan
 
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: terraform/tfplan
+
 
   apply:
     name: Terraform Apply
@@ -68,13 +69,9 @@ jobs:
           role-to-assume: arn:aws:iam::523473407799:role/Gitrole
           aws-region: eu-west-1
 
-      - name: Clean Terraform cache
-        run: rm -rf .terraform
-        working-directory: terraform
-
       - name: Terraform Init
-        run: terraform init -reconfigure -upgrade
         working-directory: terraform
+        run: terraform init -reconfigure -upgrade
 
       - name: Download plan artifact
         uses: actions/download-artifact@v4
@@ -83,5 +80,5 @@ jobs:
           path: terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
         working-directory: terraform
+        run: terraform apply -auto-approve tfplan
