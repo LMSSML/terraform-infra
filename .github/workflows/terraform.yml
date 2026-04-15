@@ -57,5 +57,5 @@ jobs:
           aws-region: eu-west-1
 
       - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve
+        run: terraform apply -auto-approve
+        working-directory: terraform
