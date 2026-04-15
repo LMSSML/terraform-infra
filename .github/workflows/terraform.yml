@@ -26,14 +26,12 @@ jobs:
           aws-region: eu-west-1
 
       - name: Terraform Init
-        run: |
-          terraform init
-          working-directory: terraform
+        run: terraform init
+        working-directory: terraform
 
       - name: Terraform Plan
-        run: |
-          terraform plan
-          working-directory: terraform
+        run: terraform plan
+        working-directory: terraform
 
   apply:
     needs: plan
