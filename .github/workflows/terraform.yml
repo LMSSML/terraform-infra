@@ -24,12 +24,20 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::523473407799:role/Gitrole
           aws-region: eu-west-1
+
       - name: Clean Terraform cache
         run: rm -rf .terraform
         working-directory: terraform
+
       - name: Terraform Init
-        run: terraform init -reconfigure
-        working-directory: terraform
+         run: |
+           rm -rf .terraform
+           terraform init -upgrade -reconfigure
+         working-directory: terraform
+
+
+        # run: terraform init -reconfigure
+        # working-directory: terraform
 
       - name: Terraform Plan
         run: terraform plan
